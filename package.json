@@ -1,0 +1,58 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "raycast-tool",
+  "title": "Raycast Tool",
+  "description": "Personal productivity tools for Raycast",
+  "icon": "extension-icon.png",
+  "author": "user",
+  "license": "MIT",
+  "categories": [
+    "Developer Tools"
+  ],
+  "commands": [
+    {
+      "name": "open-project",
+      "title": "Open Project",
+      "subtitle": "Raycast Tool",
+      "description": "List folders in your projects directory and open them in your editor",
+      "icon": "rider-icon.png",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "projectsDirectory",
+      "title": "Projects Directory",
+      "description": "Folder that contains your projects",
+      "type": "textfield",
+      "required": false,
+      "default": "~/Project"
+    },
+    {
+      "name": "editor",
+      "title": "Default Editor",
+      "description": "Application used to open projects",
+      "type": "appPicker",
+      "required": false,
+      "default": "com.jetbrains.rider"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.83.0",
+    "@raycast/utils": "^1.17.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.3",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint"
+  }
+}
