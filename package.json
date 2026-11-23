@@ -17,6 +17,22 @@
       "description": "List folders in your projects directory and open them in your editor",
       "icon": "rider-icon.png",
       "mode": "view"
+    },
+    {
+      "name": "clone-project",
+      "title": "Clone Project",
+      "subtitle": "Raycast Tool",
+      "description": "Clone a git repository into your projects directory",
+      "icon": "extension-icon.png",
+      "mode": "view"
+    },
+    {
+      "name": "pull-project",
+      "title": "Pull Project",
+      "subtitle": "Raycast Tool",
+      "description": "Pull latest changes for git projects in your projects directory",
+      "icon": "extension-icon.png",
+      "mode": "view"
     }
   ],
   "preferences": [
@@ -44,7 +60,7 @@
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",
     "@types/node": "^22.0.0",
-    "@types/react": "^18.3.3",
+    "@types/react": "^19.0.10",
     "eslint": "^8.57.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4"

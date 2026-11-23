@@ -1,42 +1,14 @@
-import { Action, ActionPanel, Application, Icon, List, getPreferenceValues, open, showHUD } from "@raycast/api";
+import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { showFailureToast, useCachedPromise } from "@raycast/utils";
 import { readdir, stat } from "fs/promises";
-import { homedir } from "os";
 import { join } from "path";
-
-interface Preferences {
-  projectsDirectory: string;
-  editor?: Application;
-}
+import { findSolution, getEditor, getEditorName, getProjectsDirectory, openInEditor } from "./lib/projects";
 
 interface Project {
   name: string;
   path: string;
   solutionPath?: string;
   modifiedAt: number;
-}
-
-const SOLUTION_EXTENSIONS = [".sln", ".slnx"];
-const RIDER_BUNDLE_ID = "com.jetbrains.rider";
-
-function expandHome(path: string): string {
-  const trimmed = path.trim();
-  if (trimmed === "~") return homedir();
-  if (trimmed.startsWith("~/")) return join(homedir(), trimmed.slice(2));
-  return trimmed;
-}
-
-async function findSolution(projectPath: string): Promise<string | undefined> {
-  try {
-    const files = await readdir(projectPath);
-    const solution = files
-      .filter((file) => SOLUTION_EXTENSIONS.some((extension) => file.endsWith(extension)))
-      .sort()
-      .at(0);
-    return solution ? join(projectPath, solution) : undefined;
-  } catch {
-    return undefined;
-  }
 }
 
 async function loadProjects(rootDirectory: string): Promise<Project[]> {
@@ -54,27 +26,18 @@ async function loadProjects(rootDirectory: string): Promise<Project[]> {
   return projects.sort((a, b) => b.modifiedAt - a.modifiedAt);
 }
 
-function isRider(editor: Application | undefined): boolean {
-  return !editor || editor.bundleId === RIDER_BUNDLE_ID;
-}
-
-async function openProject(project: Project, editor: Application | undefined) {
-  const target = isRider(editor) && project.solutionPath ? project.solutionPath : project.path;
-  try {
-    await open(target, editor ?? RIDER_BUNDLE_ID);
-    await showHUD(`Opening ${project.name} in ${editor?.name ?? "Rider"}`);
-  } catch (error) {
-    await showFailureToast(error, { title: `Failed to open ${project.name}` });
-  }
-}
-
 export default function Command() {
-  const { projectsDirectory, editor } = getPreferenceValues<Preferences>();
-  const rootDirectory = expandHome(projectsDirectory || "~/Project");
-  const editorName = editor?.name ?? "Rider";
+  const rootDirectory = getProjectsDirectory();
+  const editorName = getEditorName(getEditor());
 
-  const { data: projects, isLoading, revalidate } = useCachedPromise(loadProjects, [rootDirectory], {
-    onError: (error) => showFailureToast(error, { title: `Cannot read ${rootDirectory}` }),
+  const {
+    data: projects,
+    isLoading,
+    revalidate,
+  } = useCachedPromise(loadProjects, [rootDirectory], {
+    onError: (error) => {
+      showFailureToast(error, { title: `Cannot read ${rootDirectory}` });
+    },
   });
 
   return (
@@ -93,7 +56,7 @@ export default function Command() {
                 <Action
                   title={`Open in ${editorName}`}
                   icon={Icon.Code}
-                  onAction={() => openProject(project, editor)}
+                  onAction={() => openInEditor(project.name, project.path, project.solutionPath)}
                 />
                 <Action.ShowInFinder path={project.path} />
                 <Action.Open
